@@ -1,0 +1,57 @@
+Developing Data Product 
+========================================================
+US Storm Database Analyzer
+
+Oct 2015
+
+US Storm Database Analyser
+========================================================
+
+Coursera [Developing Data Products](https://www.coursera.org/course/devdataprod) course project
+
+Obj : To create a Shiny application and deploy it on Rstudio's servers
+
+Source: Dataset can be obtained from [the Coursera Reproducible Research Course site](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2). It contains between 1950 and 2011 severe weather events.
+
+
+Data Information
+========================================================
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(grid)
+data <- fread('data/events.csv')
+summary(data)
+```
+
+List of Top 10 natural events 
+========================================================
+
+```{r, echo=FALSE}
+event_types <- data$EVTYPE
+
+agg <- aggregate(data, list(TYPE=event_types), FUN=mean)
+plot.data <- agg[order(-agg$FATALITIES, -agg$INJURIES),][1:10,]
+print(
+    ggplot(plot.data, aes(reorder(TYPE, FATALITIES, function(x) -x), FATALITIES, fill = TYPE)) + 
+    theme(axis.text.x = element_text(angle=-25, hjust=0, vjust=1, size=10), axis.ticks=element_blank()) + 
+    theme(legend.position = "none",  plot.margin=unit(c(10,90,10,10),"pt")) +
+        geom_bar(stat="identity") +
+        geom_text(aes(label=round(FATALITIES, 3)), size=5, vjust=1) + 
+        labs(x = "Event type", y = "Average fatalities per event") + 
+        scale_colour_brewer("qual", "Paired") + 
+        ggtitle("Top 10 natural events with highest average human fatalities per event")
+)
+```
+
+Summary
+========================================================
+
+Therefore, it can easily identify types of severe events that impacted population and economy from 1995 to 2011.
+
+More information ..
+
+- please checkout at [shinyapps.io] (https://tehty.shinyapps.io/DevDataprd2)
+- Refer to [Coursera Reproducible Research course] (https://www.coursera.org/course/repdata) example
+
